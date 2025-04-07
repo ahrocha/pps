@@ -1,0 +1,78 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: ./app
+    container_name: pps_app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/www/html
+    depends_on:
+      - write-db
+      - rabbitmq
+
+  worker:
+    build:
+      context: ./worker
+    container_name: pps_worker
+    volumes:
+      - ./worker:/var/www
+    depends_on:
+      - rabbitmq
+      - read-db
+
+  write-db:
+    image: mysql:8
+    container_name: pps_write_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: pps_write
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_write_data:/var/lib/mysql
+
+  read-db:
+    image: mysql:8
+    container_name: pps_read_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: pps_read
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_read_data:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: pps_rabbitmq
+    ports:
+      - "15672:15672"  # painel web
+      - "5672:5672"    # porta AMQP
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pps_phpmyadmin
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PMA_HOST: write-db
+      MYSQL_ROOT_PASSWORD: secret
+    depends_on:
+      - write-db
+
+volumes:
+  mysql_write_data:
+  mysql_read_data:
