@@ -12,6 +12,11 @@ services:
     depends_on:
       - write-db
       - rabbitmq
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
 
   worker:
     build:
@@ -22,16 +27,24 @@ services:
     depends_on:
       - rabbitmq
       - read-db
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASS: ${RABBITMQ_PASS}
 
   write-db:
     image: mysql:8
     container_name: pps_write_db
     restart: always
     environment:
-      MYSQL_DATABASE: pps_write
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_USER: pps_db_user
-      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
     ports:
       - "3306:3306"
     volumes:
@@ -45,9 +58,9 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: pps_read
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_USER: pps_db_user
-      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
     ports:
       - "3307:3306"
     volumes:
@@ -57,11 +70,11 @@ services:
     image: rabbitmq:3-management
     container_name: pps_rabbitmq
     ports:
-      - "15672:15672"  # painel web
-      - "5672:5672"    # porta AMQP
+      - "15672:15672"
+      - "5672:5672"
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
