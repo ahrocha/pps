@@ -7,14 +7,13 @@ Este projeto é uma aplicação backend para uma plataforma de pagamentos simpli
 
 ## Tecnologias usadas
 
-- PHP (puro)
+- PHP
 - Composer
 - Docker e Docker Compose
 - MySQL
 - RabbitMQ
 - Monolog
 - PHPUnit
-- PSR-4 (autoload e organização de classes)
 - AMQP (php-amqplib)
 
 ---
@@ -23,7 +22,7 @@ Este projeto é uma aplicação backend para uma plataforma de pagamentos simpli
 
 - **API REST**: executa transferências entre usuários
 - **RabbitMQ**: processa notificações de forma assíncrona
-- **Worker**: escuta a fila `notifications` e envia mensagens (mockadas)
+- **Worker**: escuta a fila `notifications` e envia mensagens para um endpoint mock que randomicamente retorna erro
 - **Banco de dados MySQL**: guarda usuários, carteiras e transações
 - **Log**: saídas em stdout com Monolog
 
@@ -34,15 +33,8 @@ Este projeto é uma aplicação backend para uma plataforma de pagamentos simpli
 ```bash
 git clone https://github.com/ahrocha/pps.git
 cd pps
-cp .env.example .env
+cp .env.exemplo .env
 docker-compose up -d --build
-```
-
-Verifique os logs do app e do worker:
-
-```bash
-docker logs -f pps_app
-docker logs -f pps_worker
 ```
 
 ---
@@ -104,11 +96,6 @@ Para rodar linters e testes automatizados:
 ```bash
 ./check.sh
 ```
-
-Esse comando roda:
-- PHPStan (`--level=max`)
-- PHPCS (`--standard=PSR12`)
-- PHPUnit (`--testdox`)
 
 ---
 
