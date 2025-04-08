@@ -2,15 +2,10 @@
 
 namespace App\Services;
 
-use App\Core\DatabaseService;
 use App\Repositories\UserRepository;
-use App\Repositories\WalletRepository;
-use App\Repositories\TransactionRepository;
+use App\Handlers\EnqueueTransferNotificationHandler;
 use App\Handlers\ValidateBusinessRulesHandler;
 use App\Handlers\ExecuteTransactionHandler;
-use App\Handlers\SendNotificationHandler;
-use Exception;
-use PDO;
 
 class TransferService
 {
@@ -28,7 +23,7 @@ class TransferService
 
         $chain = new ValidateBusinessRulesHandler();
         $chain->setNext(new ExecuteTransactionHandler())
-              ->setNext(new SendNotificationHandler());
+              ->setNext(new EnqueueTransferNotificationHandler());
     
         $chain->handle($payer, $payee, $value);
     }

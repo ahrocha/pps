@@ -51,7 +51,7 @@ class ExecuteTransactionHandler extends AbstractTransferHandler
         $this->next($payer, $payee, $value);
     }
 
-    // método mock para simular a autorização de transação
+    // mock para simular a autorização de transação
     private function authorize(): bool
     {
         $random = random_int(1, 10);

@@ -2,10 +2,10 @@
 
 namespace App\Handlers;
 
-use App\Core\LoggerService;
 use App\Services\NotificationQueueService;
+use App\Core\LoggerService;
 
-class SendNotificationHandler extends AbstractTransferHandler
+class EnqueueTransferNotificationHandler extends AbstractTransferHandler
 {
     private NotificationQueueService $queue;
 
@@ -17,11 +17,12 @@ class SendNotificationHandler extends AbstractTransferHandler
     public function handle(array $payer, array $payee, float $value): void
     {
         $this->queue->publish([
+            'type' => 'transfer',
             'user_id' => $payee['id'],
             'message' => "Você recebeu R$ {$value} de {$payer['name']}"
         ]);
 
-        LoggerService::getLogger()->info("Notificação enfileirada para usuário #{$payee['id']}");
+        LoggerService::getLogger()->info("Notificação de transferência enfileirada para usuário #{$payee['id']}");
 
         $this->next($payer, $payee, $value);
     }

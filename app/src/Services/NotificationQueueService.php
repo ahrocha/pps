@@ -27,7 +27,7 @@ class NotificationQueueService
 
         $message = new AMQPMessage(json_encode($data), [
             'content_type' => 'application/json',
-            'delivery_mode' => 2 // persistente
+            'delivery_mode' => 2
         ]);
 
         $channel->basic_publish($message, '', 'notifications');
