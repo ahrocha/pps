@@ -2,50 +2,68 @@
 
 namespace App\Services;
 
+use App\Core\DatabaseService;
 use App\Repositories\UserRepository;
+use App\Repositories\WalletRepository;
+use App\Repositories\TransactionRepository;
 use Exception;
+use PDO;
 
 class TransferService
 {
-    private UserRepository $users;
+    private PDO $pdo;
+    private UserRepository $userRepository;
+    private WalletRepository $walletRepository;
+    private TransactionRepository $transactionRepository;
 
     public function __construct()
     {
-        $this->users = new UserRepository();
+        $this->pdo = DatabaseService::getConnection();
+        $this->userRepository = new UserRepository();
+        $this->walletRepository = new WalletRepository();
+        $this->transactionRepository = new TransactionRepository();
     }
 
     public function transfer(float $value, int $payerId, int $payeeId): void
     {
-        $payer = $this->users->find($payerId);
-        $payee = $this->users->find($payeeId);
-
-        if ($payer['type'] === 'merchant') {
-            throw new Exception("Lojistas não podem realizar transferências.");
-        }
-
-        if ($payer['balance'] < $value) {
-            throw new Exception("Saldo insuficiente para realizar a transferência.");
-        }
+        $payer = $this->userRepository->find($payerId);
+        $payee = $this->userRepository->find($payeeId);
 
         if (!$this->mockAuthorize()) {
             throw new Exception("Transação não autorizada pelo serviço externo.");
         }
 
-        $payer['balance'] -= $value;
-        $payee['balance'] += $value;
+        try {
+            $this->pdo->beginTransaction();
 
-        $this->mockNotify($payee['id']);
+            $payerBalance = $this->walletRepository->getBalance($payerId);
+            $payeeBalance = $this->walletRepository->getBalance($payeeId);
 
-        echo "[TRANSFERÊNCIA SIMULADA] R$ {$value} de {$payer['name']} (#{$payerId}) para {$payee['name']} (#{$payeeId})\n";
+            $this->walletRepository->updateBalance($payerId, $payerBalance - $value);
+            $this->walletRepository->updateBalance($payeeId, $payeeBalance + $value);
+
+            $this->transactionRepository->create($value, $payerId, $payeeId);
+
+            $this->pdo->commit();
+
+            $this->mockNotify($payeeId);
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            throw new Exception("Erro durante a transferência: " . $e->getMessage());
+        }
     }
 
     private function mockAuthorize(): bool
     {
-        return true;
-    }
+        $random = random_int(1, 10);
+
+        echo "[AUTORIZADOR] Valor sorteado: $random\n";
+
+        return $random > 3;
+}
 
     private function mockNotify(int $userId): void
     {
-        echo "[NOTIFICAÇÃO SIMULADA] Enviada notificação ao usuário #{$userId}\n";
+        echo "[NOTIFICAÇÃO] Notificação enviada ao usuário #$userId\n";
     }
 }
