@@ -1,4 +1,3 @@
-http://localhost:8080/health
 
 # Plataforma de Pagamentos Simplificada (PPS)
 
@@ -6,7 +5,7 @@ Este projeto é uma aplicação backend para uma plataforma de pagamentos simpli
 
 ---
 
-## 🚀 Tecnologias usadas
+## Tecnologias usadas
 
 - PHP (puro)
 - Composer
@@ -20,7 +19,7 @@ Este projeto é uma aplicação backend para uma plataforma de pagamentos simpli
 
 ---
 
-## 🧒‍♂️ Componentes
+## Componentes
 
 - **API REST**: executa transferências entre usuários
 - **RabbitMQ**: processa notificações de forma assíncrona
@@ -30,10 +29,10 @@ Este projeto é uma aplicação backend para uma plataforma de pagamentos simpli
 
 ---
 
-## 📆 Como rodar localmente
+## Como rodar localmente
 
 ```bash
-git clone https://github.com/seuusuario/pps.git
+git clone https://github.com/ahrocha/pps.git
 cd pps
 cp .env.example .env
 docker-compose up -d --build
@@ -48,7 +47,7 @@ docker logs -f pps_worker
 
 ---
 
-## 📬 Endpoint principal
+## Endpoint principal
 
 ### POST /transfer
 
@@ -66,7 +65,7 @@ docker logs -f pps_worker
 
 ---
 
-## 🔄 Fluxo da transferência (Mermaid)
+## Fluxo da transferência (Mermaid)
 
 ```mermaid
 sequenceDiagram
@@ -86,7 +85,7 @@ sequenceDiagram
 
 ---
 
-## 🧱 Arquitetura da aplicação (Mermaid)
+## Arquitetura da aplicação (Mermaid)
 
 ```mermaid
 graph TD
@@ -98,33 +97,76 @@ graph TD
 
 ---
 
-## 🔪 Testes
+## Testes e Verificação de Qualidade
 
-Para rodar os testes com PHPUnit:
+Para rodar linters e testes automatizados:
 
 ```bash
-docker exec -it pps_app vendor/bin/phpunit
+./check.sh
+```
+
+Esse comando roda:
+- PHPStan (`--level=max`)
+- PHPCS (`--standard=PSR12`)
+- PHPUnit (`--testdox`)
+
+---
+
+## 📦 Endpoint de Transferência
+
+### POST `/transfer`
+
+**Payload:**
+
+```json
+{
+  "value": 100.0,
+  "payer": 1,
+  "payee": 2
+}
+```
+
+Retorna `200 OK` se a transferência for realizada com sucesso.
+
+---
+
+
+## Diagrama do Banco de Dados
+
+```mermaid
+erDiagram
+    users {
+        int id PK
+        string name
+        string cpf
+        string email
+        string password
+        enum type
+        timestamp created_at
+    }
+
+    wallets {
+        int id PK
+        int user_id FK
+        decimal balance
+    }
+
+    transactions {
+        int id PK
+        decimal value
+        int payer_id FK
+        int payee_id FK
+        timestamp created_at
+    }
+
+    users ||--o{ wallets: "possui"
+    users ||--o{ transactions : "realiza"
+    users ||--o{ transactions : "recebe"
 ```
 
 ---
 
-## 📂 Estrutura de pastas
-
-```
-app/
-├── public/                # Entrada da aplicação (index.php)
-├── src/
-│   ├── Controllers/
-│   ├── Services/
-│   ├── Repositories/
-│   ├── Handlers/          # Chain of Responsibility
-│   ├── Core/              # Config e utilitários (ex: DB, Logger)
-│   └── Commands/          # Scripts CLI (ex: worker)
-```
-
----
-
-## 🧠 Decisões arquiteturais
+## Decisões arquiteturais
 
 - Uso do padrão **Chain of Responsibility** para modularizar o fluxo de transferência
 - Enfileiramento de notificações com RabbitMQ para desacoplar a operação
@@ -133,16 +175,10 @@ app/
 
 ---
 
-## 📌 Observações
+## Observações
 
 - Cadastro de usuários não está incluso (foco apenas na transferência)
 - A simulação do serviço autorizador e notificador utiliza mocks externos
 - As notificações com falha permanecem na fila para nova tentativa
-
----
-
-## 📃 Licença
-
-MIT - uso livre para fins de estudo ou expansão.
 
 ---
