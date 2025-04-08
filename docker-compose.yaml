@@ -30,12 +30,14 @@ services:
     environment:
       MYSQL_DATABASE: pps_write
       MYSQL_ROOT_PASSWORD: secret
-      MYSQL_USER: root
+      MYSQL_USER: pps_db_user
       MYSQL_PASSWORD: secret
     ports:
       - "3306:3306"
     volumes:
       - mysql_write_data:/var/lib/mysql
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./docker/db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
 
   read-db:
     image: mysql:8
@@ -44,7 +46,7 @@ services:
     environment:
       MYSQL_DATABASE: pps_read
       MYSQL_ROOT_PASSWORD: secret
-      MYSQL_USER: root
+      MYSQL_USER: pps_db_user
       MYSQL_PASSWORD: secret
     ports:
       - "3307:3306"

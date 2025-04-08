@@ -19,7 +19,7 @@ $router->get('/health', function () {
     echo "Hello World";
 });
 
-$router->get('/transfer', [new TransferController(), 'transfer']);
+$router->post('/transfer', [new TransferController(), 'transfer']);
 
 $router->set404(function () {
     http_response_code(404);

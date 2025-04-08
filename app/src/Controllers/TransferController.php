@@ -9,13 +9,7 @@ class TransferController
 {
     public function transfer(): void
     {
-        // $input = json_decode(file_get_contents('php://input'), true);
-
-        $input = [
-            'value' => 100,
-            'payer' => 1,
-            'payee' => 2,
-        ];
+        $input = json_decode(file_get_contents('php://input'), true);
 
         try {
             (new TransferFacade())->execute($input);
