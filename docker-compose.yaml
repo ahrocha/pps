@@ -20,13 +20,13 @@ services:
 
   worker:
     build:
-      context: ./worker
+      context: ./app
     container_name: pps_worker
     volumes:
-      - ./worker:/var/www
+      - ./app:/var/www/html
     depends_on:
       - rabbitmq
-      - read-db
+      - write-db
     environment:
       DB_HOST: ${DB_HOST}
       DB_NAME: ${DB_NAME}
@@ -35,6 +35,8 @@ services:
       RABBITMQ_HOST: ${RABBITMQ_HOST}
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASS: ${RABBITMQ_PASS}
+    command: php src/Commands/NotificationWorker.php
+    restart: always
 
   write-db:
     image: mysql:8
