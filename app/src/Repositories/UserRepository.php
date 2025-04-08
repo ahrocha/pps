@@ -25,7 +25,6 @@ class UserRepository
             throw new Exception("Usuário de ID $id não encontrado.");
         }
 
-        // busca o saldo da wallet
         $wallet = $this->getWalletBalance($id);
         $user['balance'] = $wallet;
 

@@ -7,6 +7,8 @@ use App\Repositories\WalletRepository;
 use App\Repositories\TransactionRepository;
 use Exception;
 use PDO;
+use App\Core\LoggerService;
+use Monolog\Logger;
 
 class ExecuteTransactionHandler extends AbstractTransferHandler
 {
@@ -39,8 +41,10 @@ class ExecuteTransactionHandler extends AbstractTransferHandler
             }
 
             $this->pdo->commit();
+            LoggerService::getLogger()->info('Transferência executada com sucesso');
         } catch (Exception $e) {
             $this->pdo->rollBack();
+            LoggerService::getLogger()->error('Erro na execução da transação: ' . $e->getMessage());
             throw new Exception("Erro na execução da transação: " . $e->getMessage());
         }
 
@@ -51,7 +55,7 @@ class ExecuteTransactionHandler extends AbstractTransferHandler
     private function authorize(): bool
     {
         $random = random_int(1, 10);
-        echo "[AUTORIZADOR] Valor sorteado: $random\n";
+        LoggerService::getLogger()->info("[AUTORIZADOR] Valor sorteado: $random");
         return $random > 3;
     }
 }

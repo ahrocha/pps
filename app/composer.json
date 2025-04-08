@@ -3,7 +3,8 @@
     "type": "project",
     "require": {
         "guzzlehttp/guzzle": "^7.9",
-        "bramus/router": "^1.6"
+        "bramus/router": "^1.6",
+        "monolog/monolog": "^3.9"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.12",
