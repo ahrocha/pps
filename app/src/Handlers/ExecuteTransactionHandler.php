@@ -8,19 +8,21 @@ use App\Repositories\TransactionRepository;
 use Exception;
 use PDO;
 use App\Core\LoggerService;
-use Monolog\Logger;
+use App\Services\AuthorizationService;
 
 class ExecuteTransactionHandler extends AbstractTransferHandler
 {
     private PDO $pdo;
     private WalletRepository $walletRepository;
     private TransactionRepository $transactionRepository;
+    private AuthorizationService $authorization;
 
     public function __construct()
     {
         $this->pdo = DatabaseService::getConnection();
         $this->walletRepository = new WalletRepository();
         $this->transactionRepository = new TransactionRepository();
+        $this->authorization = new AuthorizationService();
     }
 
     public function handle(array $payer, array $payee, float $value): void
@@ -51,11 +53,9 @@ class ExecuteTransactionHandler extends AbstractTransferHandler
         $this->next($payer, $payee, $value);
     }
 
-    // mock para simular a autorização de transação
     private function authorize(): bool
     {
-        $random = random_int(1, 10);
-        LoggerService::getLogger()->info("[AUTORIZADOR] Valor sorteado: $random");
-        return $random > 3;
+        return $this->authorization->authorize();
     }
+    
 }
