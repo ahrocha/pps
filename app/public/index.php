@@ -4,6 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Bramus\Router\Router;
 use App\Controllers\TransferController;
+use App\Controllers\HealthController;
 
 header('Content-Type: application/json');
 
@@ -13,11 +14,7 @@ $router->get('/', function () {
     echo json_encode(['status' => 'PPS online']);
 });
 
-$router->get('/health', function () {
-    http_response_code(200);
-    header('Content-Type: text/plain');
-    echo "Hello World";
-});
+$router->get('/health', [new HealthController(), 'check']);
 
 $router->post('/transfer', [new TransferController(), 'transfer']);
 
