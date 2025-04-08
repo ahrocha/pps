@@ -7,7 +7,7 @@ CREATE TABLE users (
     cpf VARCHAR(14) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    type ENUM('user', 'merchant') NOT NULL,
+    type ENUM('usuario', 'lojista') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

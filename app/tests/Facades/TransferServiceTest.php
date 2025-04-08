@@ -16,7 +16,7 @@ class TransferServiceTest extends TestCase
     {
         $userRepo = $this->createMock(UserRepository::class);
         $userRepo->method('find')->willReturnOnConsecutiveCalls(
-            ['id' => 1, 'type' => 'common', 'balance' => 1000.0],
+            ['id' => 1, 'type' => 'usuario', 'balance' => 1000.0],
             ['id' => 2, 'type' => 'merchant']
         );
 
@@ -27,12 +27,12 @@ class TransferServiceTest extends TestCase
         $transactionRepo = $this->createMock(TransactionRepository::class);
         $transactionRepo->method('create');
 
-        $authService = $this->createMock(AuthorizationService::class);
-        $authService->method('authorize')->willReturn(true);
+        $authorizationService = $this->createMock(AuthorizationService::class);
+        $authorizationService->method('authorize')->willReturn(true);
 
         $service = new TransferService(
             $userRepo,
-            $authService,
+            $authorizationService,
             $walletRepo,
             $transactionRepo
         );
@@ -48,8 +48,8 @@ class TransferServiceTest extends TestCase
 
         $userRepo = $this->createMock(UserRepository::class);
         $userRepo->method('find')->willReturnOnConsecutiveCalls(
-            ['id' => 1, 'type' => 'common'],
-            ['id' => 1, 'type' => 'common']
+            ['id' => 1, 'type' => 'usuario'],
+            ['id' => 1, 'type' => 'usuario']
         );
 
         $service = new TransferService($userRepo);
@@ -63,8 +63,8 @@ class TransferServiceTest extends TestCase
 
         $userRepo = $this->createMock(UserRepository::class);
         $userRepo->method('find')->willReturnOnConsecutiveCalls(
-            ['id' => 2, 'type' => 'merchant', 'balance' => 1000.0],
-            ['id' => 1, 'type' => 'common']
+            ['id' => 2, 'type' => 'lojista', 'balance' => 1000.0],
+            ['id' => 1, 'type' => 'usuario']
         );
 
         $service = new TransferService($userRepo);
@@ -78,7 +78,7 @@ class TransferServiceTest extends TestCase
 
         $userRepo = $this->createMock(UserRepository::class);
         $userRepo->method('find')->willReturnOnConsecutiveCalls(
-            ['id' => 3, 'type' => 'common', 'balance' => 1000.0],
+            ['id' => 3, 'type' => 'usuario', 'balance' => 1000.0],
             ['id' => 2, 'type' => 'merchant']
         );
 
@@ -101,7 +101,7 @@ class TransferServiceTest extends TestCase
 
         $userRepo = $this->createMock(UserRepository::class);
         $userRepo->method('find')->willReturnOnConsecutiveCalls(
-            ['id' => 1, 'type' => 'common', 'balance' => 1000.0],
+            ['id' => 1, 'type' => 'usuario', 'balance' => 1000.0],
             ['id' => 2, 'type' => 'merchant']
         );
 
@@ -112,12 +112,12 @@ class TransferServiceTest extends TestCase
         $transactionRepo = $this->createMock(TransactionRepository::class);
         $transactionRepo->method('create');
 
-        $authService = $this->createMock(AuthorizationService::class);
-        $authService->method('authorize')->willReturn(false);
+        $authorizationService = $this->createMock(AuthorizationService::class);
+        $authorizationService->method('authorize')->willReturn(false);
 
         $service = new TransferService(
             $userRepo,
-            $authService,
+            $authorizationService,
             $walletRepo,
             $transactionRepo
         );

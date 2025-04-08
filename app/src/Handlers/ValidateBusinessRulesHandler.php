@@ -18,13 +18,13 @@ class ValidateBusinessRulesHandler extends AbstractTransferHandler
             throw new Exception("Pagador e recebedor não podem ser o mesmo usuário.");
         }
 
-        if ($payer['type'] === 'merchant') {
+        if ($payer['type'] === 'lojista') {
             LoggerService::getLogger()->warning('Lojistas não podem realizar transferências', [
                 'payer_id' => $payer['id'],
                 'payee_id' => $payee['id'],
                 'value' => $value,
             ]);
-            throw new Exception("Lojistas não podem realizar transferências. " . $payer['id'] . " " . $payer['name'] . " " . $payer['type'] . " " . $payer['balance'] . " " . $value);
+            throw new Exception("Lojistas não podem realizar transferências.");
         }
 
         if ($payer['balance'] < $value) {
