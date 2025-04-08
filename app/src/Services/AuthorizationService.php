@@ -26,7 +26,9 @@ class AuthorizationService
 
         $result = json_decode($response, true);
         LoggerService::getLogger()->debug("[AUTORIZADOR] Resposta do serviço: " . json_encode($result));
-        $autorizado = isset($result['data']) &&  isset($result['data']['authorization']) && $result['data']['authorization'] === true;
+        $autorizado = isset($result['data']) &&
+                        isset($result['data']['authorization'])
+                        && $result['data']['authorization'] === true;
 
         LoggerService::getLogger()->info("[AUTORIZADOR] Resposta: " . json_encode($result));
 

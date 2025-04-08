@@ -11,6 +11,9 @@ use PhpAmqpLib\Exception\AMQPIOException;
 $maxAttempts = 5;
 $attempt = 0;
 
+/** @var AMQPStreamConnection|null $connection */
+$connection = null;
+
 while ($attempt < $maxAttempts) {
     try {
         $connection = new AMQPStreamConnection(
@@ -19,6 +22,7 @@ while ($attempt < $maxAttempts) {
             getenv('RABBITMQ_USER') ?: 'guest',
             getenv('RABBITMQ_PASS') ?: 'guest'
         );
+
         break;
     } catch (AMQPIOException $e) {
         $attempt++;
@@ -27,12 +31,13 @@ while ($attempt < $maxAttempts) {
     }
 }
 
-if (!isset($connection)) {
+if (!$connection instanceof AMQPStreamConnection) {
     throw new Exception("Não foi possível conectar ao RabbitMQ após {$maxAttempts} tentativas.");
 }
 
 LoggerService::getLogger()->info("Worker de notificação iniciado com sucesso.");
 
+/** @var \PhpAmqpLib\Channel\AMQPChannel $channel */
 $channel = $connection->channel();
 $channel->queue_declare('notifications', false, true, false, false);
 
