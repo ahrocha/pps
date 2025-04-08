@@ -23,11 +23,6 @@ class TransferService
 
     public function transfer(float $value, int $payerId, int $payeeId): void
     {
-
-        if (!$this->mockAuthorize()) {
-            throw new Exception("Transação não autorizada pelo serviço externo.");
-        }
-
         $payer = $this->userRepository->find($payerId);
         $payee = $this->userRepository->find($payeeId);
 
@@ -36,19 +31,5 @@ class TransferService
               ->setNext(new SendNotificationHandler());
     
         $chain->handle($payer, $payee, $value);
-    }
-
-    private function mockAuthorize(): bool
-    {
-        $random = random_int(1, 10);
-
-        echo "[AUTORIZADOR] Valor sorteado: $random\n";
-
-        return $random > 3;
-}
-
-    private function mockNotify(int $userId): void
-    {
-        echo "[NOTIFICAÇÃO] Notificação enviada ao usuário #$userId\n";
     }
 }

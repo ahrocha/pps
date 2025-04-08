@@ -34,6 +34,10 @@ class ExecuteTransactionHandler extends AbstractTransferHandler
 
             $this->transactionRepository->create($value, $payer['id'], $payee['id']);
 
+            if (!$this->authorize()) {
+                throw new Exception("Transação não autorizada pelo serviço externo.");
+            }
+
             $this->pdo->commit();
         } catch (Exception $e) {
             $this->pdo->rollBack();
@@ -41,5 +45,13 @@ class ExecuteTransactionHandler extends AbstractTransferHandler
         }
 
         $this->next($payer, $payee, $value);
+    }
+
+    // método mock para simular a autorização de transação
+    private function authorize(): bool
+    {
+        $random = random_int(1, 10);
+        echo "[AUTORIZADOR] Valor sorteado: $random\n";
+        return $random > 3;
     }
 }
