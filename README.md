@@ -97,6 +97,10 @@ Para rodar linters e testes automatizados:
 docker exec -it pps_app bash check.sh
 ```
 
+```bash
+docker exec -it pps_app bash -c "php -d display_errors=1 ./vendor/bin/phpunit"
+```
+
 ---
 
 ## 📦 Endpoint de Transferência

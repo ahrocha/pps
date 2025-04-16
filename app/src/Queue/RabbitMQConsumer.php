@@ -5,6 +5,7 @@ namespace App\Queue;
 use App\Core\LoggerService;
 use App\Notification\NotificationContext;
 use App\Notification\DeviToolsNotificationStrategy;
+use App\Notification\NotificationDTO;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPIOException;
 
@@ -50,8 +51,10 @@ class RabbitMQConsumer implements QueueConsumerInterface
     public function consume(callable $handler): void
     {
         $this->channel->basic_consume($this->queue, '', false, false, false, false, function ($msg) use ($handler) {
+            var_dump($msg->body);
             try {
-                $handler(json_decode($msg->body, true));
+                $data = NotificationDTO::fromJson($msg->body);
+                $handler($data, true);
                 $this->channel->basic_ack($msg->getDeliveryTag());
             } catch (\Exception $e) {
                 LoggerService::getLogger()->error("Erro no handler da fila: " . $e->getMessage());

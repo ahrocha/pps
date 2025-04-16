@@ -11,8 +11,8 @@ class NotificationContext
         $this->strategy = $strategy;
     }
 
-    public function send(array $data): void
+    public function send(NotificationDTO $notification): void
     {
-        $this->strategy->send($data);
+        $this->strategy->send($notification);
     }
 }

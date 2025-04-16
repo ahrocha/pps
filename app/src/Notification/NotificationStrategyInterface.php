@@ -4,5 +4,5 @@ namespace App\Notification;
 
 interface NotificationStrategyInterface
 {
-    public function send(array $data): void;
+    public function send(NotificationDTO $notification): void;
 }
