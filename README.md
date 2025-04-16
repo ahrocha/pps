@@ -94,7 +94,7 @@ graph TD
 Para rodar linters e testes automatizados:
 
 ```bash
-./check.sh
+docker exec -it pps_app bash check.sh
 ```
 
 ---
