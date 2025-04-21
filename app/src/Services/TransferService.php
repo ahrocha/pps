@@ -6,19 +6,24 @@ use App\Repositories\UserRepository;
 use App\Handlers\EnqueueTransferNotificationHandler;
 use App\Handlers\ValidateBusinessRulesHandler;
 use App\Handlers\ExecuteTransactionHandler;
-use App\Services\AuthorizationService;
 
 class TransferService
 {
     private UserRepository $userRepository;
-    private AuthorizationService $authorizationService;
+    private EnqueueTransferNotificationHandler $enqueueTransferNotificationHandler;
+    private ValidateBusinessRulesHandler $validateBusinessRulesHandler;
+    private ExecuteTransactionHandler $executeTransactionHandler;
 
     public function __construct(
-        ?UserRepository $userRepository = null,
-        ?AuthorizationService $authorizationService = null
+        UserRepository $userRepository,
+        EnqueueTransferNotificationHandler $enqueueTransferNotificationHandler,
+        ValidateBusinessRulesHandler $validateBusinessRulesHandler,
+        ExecuteTransactionHandler $executeTransactionHandler
     ) {
-        $this->userRepository = $userRepository ?? new UserRepository();
-        $this->authorizationService = $authorizationService ?? new AuthorizationService();
+        $this->userRepository = $userRepository;
+        $this->enqueueTransferNotificationHandler = $enqueueTransferNotificationHandler;
+        $this->validateBusinessRulesHandler = $validateBusinessRulesHandler;
+        $this->executeTransactionHandler = $executeTransactionHandler;
     }
 
     public function transfer(float $value, int $payerId, int $payeeId): void
@@ -26,9 +31,9 @@ class TransferService
         $payer = $this->userRepository->find($payerId);
         $payee = $this->userRepository->find($payeeId);
 
-        $chain = new ValidateBusinessRulesHandler();
-        $chain->setNext(new ExecuteTransactionHandler($this->authorizationService))
-              ->setNext(new EnqueueTransferNotificationHandler());
+        $chain = $this->validateBusinessRulesHandler;
+        $chain->setNext($this->executeTransactionHandler)
+              ->setNext($this->enqueueTransferNotificationHandler);
 
         $chain->handle($payer, $payee, $value);
     }

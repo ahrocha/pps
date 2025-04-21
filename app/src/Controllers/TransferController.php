@@ -8,12 +8,18 @@ use App\Core\LoggerService;
 
 class TransferController
 {
+    private TransferFacade $transferFacade;
+
+    public function __construct(TransferFacade $transferFacade)
+    {
+        $this->transferFacade = $transferFacade;
+    }
     public function transfer(): void
     {
         $input = json_decode(file_get_contents('php://input'), true);
 
         try {
-            (new TransferFacade())->execute($input);
+            $this->transferFacade->execute($input);
             echo json_encode(['status' => 'Transferência realizada com sucesso']);
         } catch (Exception $e) {
             http_response_code(400);

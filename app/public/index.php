@@ -16,13 +16,11 @@ $router->get('/', function () {
     echo json_encode(['status' => 'PPS online']);
 });
 
-// $router->get('/health', [new HealthController(), 'check']);
 $router->get('/health', function () use ($container) {
     $controller = $container->get(HealthController::class);
     $controller->check();
 });
 
-// $router->post('/transfer', [new TransferController(), 'transfer']);
 $router->post('/transfer', function () use ($container) {
     $controller = $container->get(TransferController::class);
     $controller->transfer();

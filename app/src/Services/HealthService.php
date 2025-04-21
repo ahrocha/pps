@@ -4,9 +4,17 @@ namespace App\Services;
 
 use App\Core\DatabaseService;
 use Exception;
+use PDO;
 
 class HealthService
 {
+    private PDO $pdo;
+
+    public function __construct(PDO $pdo)
+    {
+        $this->pdo = $pdo;
+    }
+
     public function check(): array
     {
         $status = 'ok';
@@ -15,8 +23,7 @@ class HealthService
         $errors = [];
 
         try {
-            $pdo = DatabaseService::getConnection();
-            $pdo->query('SELECT 1');
+            $this->pdo->query('SELECT 1');
             $dbOk = true;
         } catch (Exception $e) {
             $status = 'degraded';

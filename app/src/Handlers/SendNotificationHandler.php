@@ -9,9 +9,9 @@ class SendNotificationHandler extends AbstractTransferHandler
 {
     private NotificationQueueService $queue;
 
-    public function __construct()
+    public function __construct(NotificationQueueService $queue)
     {
-        $this->queue = new NotificationQueueService();
+        $this->queue = $queue;
     }
 
     public function handle(array $payer, array $payee, float $value): void

@@ -17,12 +17,16 @@ class ExecuteTransactionHandler extends AbstractTransferHandler
     private TransactionRepository $transactionRepository;
     private AuthorizationService $authorization;
 
-    public function __construct(AuthorizationService $authorization = null)
-    {
-        $this->pdo = DatabaseService::getConnection();
-        $this->walletRepository = new WalletRepository();
-        $this->transactionRepository = new TransactionRepository();
-        $this->authorization = $authorization ?? new AuthorizationService();
+    public function __construct(
+        AuthorizationService $authorization,
+        PDO $pdo,
+        WalletRepository $walletRepository,
+        TransactionRepository $transactionRepository
+    ) {
+        $this->pdo = $pdo;
+        $this->walletRepository = $walletRepository;
+        $this->transactionRepository = $transactionRepository;
+        $this->authorization = $authorization;
     }
 
     public function handle(array $payer, array $payee, float $value): void
