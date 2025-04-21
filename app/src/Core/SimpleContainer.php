@@ -15,6 +15,8 @@ use App\Handlers\EnqueueTransferNotificationHandler;
 use App\Handlers\ValidateBusinessRulesHandler;
 use App\Handlers\ExecuteTransactionHandler;
 use App\Validators\TransferValidator;
+use App\Queue\MessagePublisherInterface;
+use App\Queue\RabbitMQPublisher;
 use PDO;
 
 class SimpleContainer implements ContainerInterface
@@ -75,7 +77,12 @@ class SimpleContainer implements ContainerInterface
                 return new TransferValidator();
             },
             NotificationQueueService::class => function (SimpleContainer $container) {
-                return new NotificationQueueService();
+                return new NotificationQueueService(
+                    $container->get(MessagePublisherInterface::class)
+                );
+            },
+            MessagePublisherInterface::class => function (SimpleContainer $container) {
+                return new RabbitMQPublisher();
             },
             HealthService::class => function ($container) {
                 return new HealthService($container->get(PDO::class));
@@ -83,6 +90,7 @@ class SimpleContainer implements ContainerInterface
             PDO::class => function () {
                 return DatabaseService::getConnection();
             },
+
         ];
     }
 

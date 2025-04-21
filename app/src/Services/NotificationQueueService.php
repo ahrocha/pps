@@ -2,36 +2,20 @@
 
 namespace App\Services;
 
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PhpAmqpLib\Message\AMQPMessage;
-use Exception;
+use App\Queue\MessagePublisherInterface;
 
 class NotificationQueueService
 {
-    private AMQPStreamConnection $connection;
+    private MessagePublisherInterface $publisher;
+    private string $queueName = 'notifications';
 
-    public function __construct()
+    public function __construct(MessagePublisherInterface $publisher)
     {
-        $this->connection = new AMQPStreamConnection(
-            getenv('RABBITMQ_HOST') ?: 'pps_rabbitmq',
-            5672,
-            getenv('RABBITMQ_USER') ?: 'guest',
-            getenv('RABBITMQ_PASS') ?: 'guest'
-        );
+        $this->publisher = $publisher;
     }
 
     public function publish(array $data): void
     {
-        $channel = $this->connection->channel();
-        $channel->queue_declare('notifications', false, true, false, false);
-
-        $message = new AMQPMessage(json_encode($data), [
-            'content_type' => 'application/json',
-            'delivery_mode' => 2
-        ]);
-
-        $channel->basic_publish($message, '', 'notifications');
-        $channel->close();
-        $this->connection->close();
+        $this->publisher->publish($this->queueName, $data);
     }
 }

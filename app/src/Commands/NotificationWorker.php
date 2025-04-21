@@ -13,6 +13,8 @@ LoggerService::getLogger()->info("Iniciando worker de notificação...");
 $consumer = new MessageQueueConsumer();
 $context = new NotificationContext(new DeviToolsNotificationStrategy());
 
-$consumer->consume(function (NotificationDTO $notification) use ($context) {
+$queueName = 'notifications';
+
+$consumer->consume($queueName, function (NotificationDTO $notification) use ($context) {
     $context->send($notification);
 });
