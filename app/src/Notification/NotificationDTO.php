@@ -7,7 +7,8 @@ class NotificationDTO
     public function __construct(
         public readonly int $userId,
         public readonly string $message
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {

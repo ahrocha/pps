@@ -48,4 +48,21 @@ class NotificationDTOTest extends TestCase
             'message' => str_repeat('a', 181)
         ]);
     }
+
+    public function testShouldCreateDtoFromValidJson(): void
+    {
+        $json = json_encode(['user_id' => 456, 'message' => 'Outra mensagem']);
+        $dto = NotificationDTO::fromJson($json);
+
+        $this->assertSame(456, $dto->userId);
+        $this->assertSame('Outra mensagem', $dto->message);
+    }
+
+    public function testShouldThrowExceptionWhenJsonIsInvalid(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Erro ao decodificar JSON: Syntax error');
+
+        NotificationDTO::fromJson('invalid json');
+    }
 }

@@ -4,7 +4,6 @@ namespace App\Core;
 
 use App\Controllers\TransferController;
 use App\Controllers\HealthController;
-use App\Facades\TransferFacade;
 use App\Repositories\UserRepository;
 use App\Services\AuthorizationService;
 use App\Services\HealthService;
@@ -26,12 +25,9 @@ class SimpleContainer implements ContainerInterface
     {
         $this->services = [
             TransferController::class => function (SimpleContainer $container) {
-                return new TransferController($container->get(TransferFacade::class));
-            },
-            TransferFacade::class => function (SimpleContainer $container) {
-                return new TransferFacade(
-                    $container->get(TransferValidator::class),
-                    $container->get(TransferService::class)
+                return new TransferController(
+                    $container->get(TransferService::class),
+                    $container->get(TransferValidator::class)
                 );
             },
             TransferService::class => function (SimpleContainer $container) {
@@ -69,20 +65,14 @@ class SimpleContainer implements ContainerInterface
             },
             EnqueueTransferNotificationHandler::class => function (SimpleContainer $container) {
                 return new EnqueueTransferNotificationHandler(
-                    $container->get(NotificationQueueService::class),
-                    $container->get(AuthorizationService::class)
+                    $container->get(NotificationQueueService::class)
                 );
             },
             ValidateBusinessRulesHandler::class => function (SimpleContainer $container) {
-                return new ValidateBusinessRulesHandler(
-                    $container->get(AuthorizationService::class)
-                );
+                return new ValidateBusinessRulesHandler();
             },
             TransferValidator::class => function (SimpleContainer $container) {
-                return new TransferValidator(
-                    $container->get(UserRepository::class),
-                    $container->get(WalletRepository::class)
-                );
+                return new TransferValidator();
             },
             NotificationQueueService::class => function (SimpleContainer $container) {
                 return new NotificationQueueService();

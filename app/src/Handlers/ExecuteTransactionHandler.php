@@ -57,7 +57,7 @@ class ExecuteTransactionHandler extends AbstractTransferHandler
         $this->next($payer, $payee, $value);
     }
 
-    private function authorize(): bool
+    public function authorize(): bool
     {
         return $this->authorization->authorize();
     }
