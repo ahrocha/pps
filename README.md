@@ -159,6 +159,13 @@ Payload:
 ```
 ---
 
+---
+Para gerar o hash de uma senha para o banco de dados, utilize o script, via linha de comando, substituindo a palavra senha do exemplo abaixo:
+```
+php hash_generator.php senha
+```
+---
+
 
 ## Diagrama do Banco de Dados
 
