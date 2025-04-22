@@ -3,7 +3,8 @@
 namespace App\Handlers;
 
 use App\Core\LoggerService;
-use Exception;
+use App\Exceptions\InsufficientFundsException;
+use App\Exceptions\InvalidTransferException;
 
 class ValidateBusinessRulesHandler extends AbstractTransferHandler
 {
@@ -15,7 +16,7 @@ class ValidateBusinessRulesHandler extends AbstractTransferHandler
                 'payee_id' => $payee['id'],
                 'value' => $value,
             ]);
-            throw new Exception("Pagador e recebedor não podem ser o mesmo usuário.");
+            throw new InvalidTransferException("Pagador e recebedor não podem ser o mesmo usuário.");
         }
 
         if ($payer['type'] === 'lojista') {
@@ -24,7 +25,7 @@ class ValidateBusinessRulesHandler extends AbstractTransferHandler
                 'payee_id' => $payee['id'],
                 'value' => $value,
             ]);
-            throw new Exception("Lojistas não podem realizar transferências.");
+            throw new InvalidTransferException("Lojistas não podem realizar transferências.");
         }
 
         if ($payer['balance'] < $value) {
@@ -34,7 +35,7 @@ class ValidateBusinessRulesHandler extends AbstractTransferHandler
                 'payee_id' => $payee['id'],
                 'value' => $value,
             ]);
-            throw new Exception("Saldo insuficiente para realizar a transferência.");
+            throw new InsufficientFundsException("Saldo insuficiente para realizar a transferência.");
         }
 
         $this->next($payer, $payee, $value);

@@ -1,9 +1,9 @@
 <?php
 
- namespace App\Middleware;
+namespace App\Middleware;
 
- use App\Services\AuthenticationService;
- use Exception;
+use App\Services\AuthenticationService;
+use Exception;
 
 class AuthMiddleware
 {

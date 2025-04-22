@@ -1,10 +1,10 @@
 <?php
 
- namespace App\Services;
+namespace App\Services;
 
- use App\Core\LoggerService;
- use App\Repositories\UserRepository;
- use Exception;
+use App\Core\LoggerService;
+use App\Repositories\UserRepository;
+use Exception;
 
 class AuthenticationService
 {

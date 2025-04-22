@@ -36,13 +36,12 @@ class TransferService
         $chain->setNext($this->executeTransactionHandler)
               ->setNext($this->enqueueTransferNotificationHandler);
 
-            try {
+        try {
             $chain->handle($payer, $payee, $value);
             LoggerService::getLogger()->info("[TRANSFER] Transferência concluída com sucesso.");
         } catch (\Exception $e) {
             LoggerService::getLogger()->error("[TRANSFER] Erro durante a transferência: " . $e->getMessage());
             throw $e;
         }
-
     }
 }

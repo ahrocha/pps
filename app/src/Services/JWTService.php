@@ -1,10 +1,10 @@
 <?php
 
- namespace App\Services;
+namespace App\Services;
 
- use Firebase\JWT\JWT;
- use Firebase\JWT\Key;
- use Exception;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use Exception;
 
 class JWTService
 {
