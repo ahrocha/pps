@@ -2,21 +2,25 @@
 
 namespace App\Core;
 
-use App\Controllers\TransferController;
+use App\Controllers\AuthController;
 use App\Controllers\HealthController;
-use App\Repositories\UserRepository;
-use App\Services\AuthorizationService;
-use App\Services\HealthService;
-use App\Services\TransferService;
-use App\Services\NotificationQueueService;
-use App\Repositories\WalletRepository;
-use App\Repositories\TransactionRepository;
+use App\Controllers\PayController;
+use App\Controllers\TransferController;
 use App\Handlers\EnqueueTransferNotificationHandler;
-use App\Handlers\ValidateBusinessRulesHandler;
 use App\Handlers\ExecuteTransactionHandler;
-use App\Validators\TransferValidator;
+use App\Handlers\ValidateBusinessRulesHandler;
 use App\Queue\MessagePublisherInterface;
 use App\Queue\RabbitMQPublisher;
+use App\Repositories\TransactionRepository;
+use App\Repositories\UserRepository;
+use App\Repositories\WalletRepository;
+use App\Services\AuthenticationService;
+use App\Services\AuthorizationService;
+use App\Services\HealthService;
+use App\Services\JWTService;
+use App\Services\NotificationQueueService;
+use App\Services\TransferService;
+use App\Validators\TransferValidator;
 use PDO;
 
 class SimpleContainer implements ContainerInterface
@@ -90,7 +94,26 @@ class SimpleContainer implements ContainerInterface
             PDO::class => function () {
                 return DatabaseService::getConnection();
             },
-
+            AuthController::class => function (SimpleContainer $container) {
+                return new AuthController(
+                    $container->get(AuthenticationService::class)
+                );
+            },
+            AuthenticationService::class => function (SimpleContainer $container) {
+                return new AuthenticationService(
+                    $container->get(UserRepository::class),
+                    $container->get(JWTService::class)
+                );
+            },
+            JWTService::class => function () {
+                return new JWTService(getenv('JWT_SECRET_KEY') ?: 'secret-key-placeholder');
+            },
+            PayController::class => function (SimpleContainer $container) {
+                return new PayController(
+                    $container->get(TransferService::class),
+                    $container->get(TransferValidator::class)
+                );
+            },
         ];
     }
 

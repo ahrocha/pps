@@ -39,4 +39,13 @@ class UserRepository
 
         return $result ? floatval($result['balance']) : 0.0;
     }
+
+    public function findByEmail(string $username): ?array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$username]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $user ?: null;
+    }
 }

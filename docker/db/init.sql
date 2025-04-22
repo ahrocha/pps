@@ -27,3 +27,12 @@ CREATE TABLE transactions (
     FOREIGN KEY (payer_id) REFERENCES users(id),
     FOREIGN KEY (payee_id) REFERENCES users(id)
 );
+
+CREATE TABLE user_sessions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);

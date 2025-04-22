@@ -11,7 +11,8 @@ class RabbitMQConsumer extends RabbitMQConnection implements QueueConsumerInterf
     public function consume(string $queue, callable $handler): void
     {
         $channel = $this->getChannel();
-        $channel->basic_consume($queue, '', false, false, false, false, function (AMQPMessage $message) use ($handler, $channel) { // Type hint para AMQPMessage
+        $channel->basic_consume($queue, '', false, false, false, false, function (AMQPMessage $message) use ($handler, $channel) {
+ // Type hint para AMQPMessage
             try {
                 $data = NotificationDTO::fromJson($message->body);
                 $handler($data, true);
