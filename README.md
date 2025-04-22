@@ -103,7 +103,7 @@ docker exec -it pps_app bash -c "php -d display_errors=1 ./vendor/bin/phpunit"
 
 ---
 
-## 📦 Endpoint de Transferência
+## Endpoint de Transferência
 
 ### POST `/transfer`
 
@@ -119,6 +119,44 @@ docker exec -it pps_app bash -c "php -d display_errors=1 ./vendor/bin/phpunit"
 
 Retorna `200 OK` se a transferência for realizada com sucesso.
 
+---
+## Endpoint de Login
+
+### POST `/login`
+
+**Payload:**
+
+```json
+{
+  "email": "usuário123",
+  "password": "senha123"
+}
+```
+**Response:**
+
+```
+{
+  "token": "seu.jwt.aqui"
+}
+```
+
+---
+
+Endpoint de Pagamento
+### POST `/login`
+
+Headers:
+```
+Authorization: Bearer seu.jwt.aqui
+```
+
+Payload:
+```json
+{
+  "value": 100.0,
+  "payee": 15
+}
+```
 ---
 
 
@@ -151,7 +189,7 @@ erDiagram
     }
 
     users ||--o{ wallets: "possui"
-    users ||--o{ transactions : "realiza"
+    users ||--o{ transactions : "transfere"
     users ||--o{ transactions : "recebe"
 ```
 
@@ -159,7 +197,6 @@ erDiagram
 
 ## Decisões arquiteturais
 
-- Uso do padrão **Chain of Responsibility** para modularizar o fluxo de transferência
 - Enfileiramento de notificações com RabbitMQ para desacoplar a operação
 - Ack manual no worker para permitir reentregas em caso de falha
 - Logs enviados para `stdout` para facilitar observabilidade via Docker
@@ -171,5 +208,12 @@ erDiagram
 - Cadastro de usuários não está incluso (foco apenas na transferência)
 - A simulação do serviço autorizador e notificador utiliza mocks externos
 - As notificações com falha permanecem na fila para nova tentativa
+- Adicionado novo endpoint para pagamento por usuário autenticado
 
+## Roadmap
+- Limitar a quantidade de requisições por minuto/segundo/ip
+- Restringir acesso a rota /transfer:
+  - por IP
+  - com alguma autenticação e role
+- Limitar falhas de notificação e mover para outra fila ou banco de dados
 ---
