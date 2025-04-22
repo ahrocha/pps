@@ -31,7 +31,7 @@ class RabbitMQConnection
                 return;
             } catch (AMQPIOException $e) {
                 $attempt++;
-                echo "[RabbitMQConnection] Tentativa {$attempt}/{$maxAttempts}. RabbitMQ falhou.  Tentando novamente...\n";
+                echo "[RabbitMQConnection] Tentativa {$attempt}/{$maxAttempts}. RabbitMQ falhou.\n";
                 sleep($retryInterval);
             }
         }

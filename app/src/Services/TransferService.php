@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\UserRepository;
+use App\Core\LoggerService;
 use App\Handlers\EnqueueTransferNotificationHandler;
 use App\Handlers\ValidateBusinessRulesHandler;
 use App\Handlers\ExecuteTransactionHandler;
@@ -35,6 +36,13 @@ class TransferService
         $chain->setNext($this->executeTransactionHandler)
               ->setNext($this->enqueueTransferNotificationHandler);
 
-        $chain->handle($payer, $payee, $value);
+            try {
+            $chain->handle($payer, $payee, $value);
+            LoggerService::getLogger()->info("[TRANSFER] Transferência concluída com sucesso.");
+        } catch (\Exception $e) {
+            LoggerService::getLogger()->error("[TRANSFER] Erro durante a transferência: " . $e->getMessage());
+            throw $e;
+        }
+
     }
 }

@@ -2,6 +2,7 @@
 
  namespace App\Services;
 
+ use App\Core\LoggerService;
  use App\Repositories\UserRepository;
  use Exception;
 
@@ -21,6 +22,7 @@ class AuthenticationService
         $user = $this->userRepository->findByEmail($email);
 
         if (!$user || !password_verify($password, $user['password'])) {
+            LoggerService::getLogger()->warning("[AUTENTICACAO] Falha para o email: {$email}");
             throw new Exception('Credenciais inválidas.');
         }
 
@@ -29,6 +31,7 @@ class AuthenticationService
             'user_type' => $user['type'],
         ];
 
+        LoggerService::getLogger()->info("[AUTENTICACAO] Sucesso para o email: {$email}.");
         return $this->jwtService->encode($payload);
     }
 
